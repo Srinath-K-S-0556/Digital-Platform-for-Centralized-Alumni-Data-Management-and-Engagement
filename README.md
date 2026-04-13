@@ -127,7 +127,6 @@ This project is deployed using:
 git clone https://github.com/Srinath-K-S-0556/Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement.git
 cd Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement
 
----
 
 ## 👨‍💻 Project Team
 
