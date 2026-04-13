@@ -126,3 +126,31 @@ This project is deployed using:
 ```bash
 git clone https://github.com/Srinath-K-S-0556/Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement.git
 cd Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement
+
+---
+
+## 👨‍💻 Project Team
+
+**Developed by:**
+
+- Srinath K S  
+- Dandu Dinesh  
+- Modi Ritheesh  
+
+**Guide / Supervisor:**
+
+- Tigulla Rajitha, Assistant Professor  
+
+**Institution:**
+
+- School of Information Science  
+- Presidency University, Bangalore  
+
+---
+
+## 📧 Contact
+
+- Email: your-kssrinathreddy027@gmail.com  
+- GitHub: https://github.com/Srinath-K-S-0556  
+
+---
