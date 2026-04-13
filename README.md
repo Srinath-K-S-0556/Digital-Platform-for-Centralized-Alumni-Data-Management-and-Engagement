@@ -75,19 +75,19 @@ The novelty of this system lies in transforming **static alumni databases** into
 ### Key Innovations:
 
 - **Self-Updating Alumni Model**  
-  Alumni manage their own profiles instead of admin-controlled updates.  
+  Alumni manage their own profiles instead of admin-controlled updates  
 
 - **Lifecycle-Based System**  
-  Alumni are categorized into career stages for continuous engagement.  
+  Alumni categorized into career stages for continuous engagement  
 
 - **Integrated Engagement Platform**  
-  Combines data management with communication, events, and interaction.  
+  Combines data management with communication, events, and interaction  
 
 - **Career-Oriented Features**  
-  Job postings and mentorship integrated into the system.  
+  Job postings and mentorship integrated into the system  
 
 - **Centralized & Searchable Repository**  
-  Enables efficient alumni tracking and institutional insights.  
+  Enables efficient alumni tracking and institutional insights  
 
 ---
 
@@ -123,34 +123,26 @@ This project is deployed using:
 ## ⚙️ How to Run the Project
 
 ### 1. Clone Repository
+
 ```bash
 git clone https://github.com/Srinath-K-S-0556/Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement.git
 cd Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement
-
----
-
-## 👨‍💻 Project Team
+👨‍💻 Project Team
 
 Developed by:
 
-- Srinath K S  
-- Dandu Dinesh  
-- Modi Ritheesh  
+Srinath K S
+Dandu Dinesh
+Modi Ritheesh
 
 Guide / Supervisor:
 
-- Tigulla Rajitha, Assistant Professor  
+Tigulla Rajitha, Assistant Professor
 
 Institution:
 
-- School of Information Science  
-- Presidency University, Bangalore  
-
----
-
-## 📧 Contact
-
-- Email: your-kssrinathreddy027@gmail.com  
-- GitHub: https://github.com/Srinath-K-S-0556  
-
----
+School of Information Science
+Presidency University, Bangalore
+📧 Contact
+Email: your-kssrinathreddy027@gmail.com
+GitHub: https://github.com/Srinath-K-S-0556
