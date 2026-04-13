@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Alumni Chatroom</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="chat-container">
+
+<div class="chat-sidebar">
+<h3>Online Users</h3>
+<ul id="online"></ul>
+</div>
+
+<div class="chat-main">
+
+<div class="chat-header">
+<h2>Alumni Community Chat</h2>
+</div>
+
+<div id="chat" class="chat-messages"></div>
+
+<div class="chat-input">
+<input id="msg" placeholder="Type message...">
+<button onclick="send()">Send</button>
+</div>
+
+</div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+
+const socket = io("http://localhost:5000");
+const user_id = localStorage.getItem("user_id");
+
+/* LOAD CHAT HISTORY */
+
+fetch("http://localhost:5000/api/chat-history")
+.then(r=>r.json())
+.then(data=>{
+ data.forEach(m=>{
+  chat.innerHTML+=`
+  <div class="message">
+  <b>${m.name}</b>
+  <p>${m.message}</p>
+  </div>`;
+ });
+});
+
+/* ONLINE USERS */
+
+socket.emit("user-online", user_id);
+
+socket.on("online-users",(users)=>{
+ online.innerHTML="";
+ users.forEach(u=>{
+  online.innerHTML+=`<li>${u}</li>`;
+ });
+});
+
+/* LIVE MESSAGES */
+
+socket.on("chat-message",(data)=>{
+ chat.innerHTML+=`
+ <div class="message">
+ <b>${data.user}</b>
+ <p>${data.message}</p>
+ </div>`;
+});
+
+/* SEND */
+
+function send(){
+
+socket.emit("chat-message",{
+user:user_id,
+message:msg.value
+});
+
+msg.value="";
+
+}
+
+</script>
+
+</body>
+</html>

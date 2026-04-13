@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<div class="sidebar">
+<h2>Admin Panel</h2>
+<a href="../chat.html">Chatroom</a>
+</div>
+
+<div class="content">
+
+<h1>Admin Dashboard</h1>
+
+<div id="profile"></div>
+<h2>System Activity</h2>
+
+<div class="card" id="activity"></div>
+<h2>Add Event</h2>
+<div class="card">
+<input id="title" placeholder="Event Title">
+<input id="date" type="date">
+<textarea id="desc" placeholder="Event Description"></textarea>
+<button onclick="addEvent()">Add Event</button>
+</div>
+
+<h2>Events</h2>
+<div id="events"></div>
+
+
+
+<h2>Add Donation</h2>
+
+<div class="card">
+<input id="dname" placeholder="Donation Name">
+<input id="phone" placeholder="Phone Number">
+<textarea id="ddesc" placeholder="Description"></textarea>
+<input type="file" id="scanner">
+<button onclick="addDonation()">Upload Donation</button>
+</div>
+
+<h2>Donations</h2>
+<div id="donations"></div>
+
+
+<h2>Event Registrations</h2>
+<ul id="eventList"></ul>
+
+<h2>Login Analytics</h2>
+<canvas id="loginChart"></canvas>
+
+<h2>Online Students</h2>
+<ul id="onlineStudents"></ul>
+
+</div>
+</div>
+
+<script>
+
+const API="http://localhost:5000/api";
+const admin=localStorage.getItem("user_id");
+
+/* PROFILE */
+
+async function loadProfile(){
+
+const res=await fetch(API+"/profile/"+admin);
+const data=await res.json();
+
+profile.innerHTML=`
+<div class="card">
+Name: ${data.name}<br>
+Email: ${data.email}<br>
+Role: Admin
+</div>
+`;
+
+}
+async function loadEventRegistrations(){
+
+ const res = await fetch(API+"/admin/event-registrations");
+ const data = await res.json();
+
+ const list = document.getElementById("eventList");
+
+ list.innerHTML="";
+
+ if(data.length===0){
+  list.innerHTML="<li>No registrations yet</li>";
+  return;
+ }
+
+ data.forEach(e=>{
+  list.innerHTML += `<li>${e.name} → ${e.title}</li>`;
+ });
+
+}
+/* EVENTS */
+
+async function addEvent(){
+
+await fetch(API+"/admin/add-event",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+title:title.value,
+description:desc.value,
+event_date:date.value,
+admin_id:admin
+})
+});
+
+alert("Event Added");
+
+}
+
+
+async function loadEvents(){
+
+const res=await fetch(API+"/events");
+const data=await res.json();
+
+events.innerHTML="";
+
+data.forEach(e=>{
+events.innerHTML+=`
+<div class="card">
+<h3>${e.title}</h3>
+<p>${e.description}</p>
+<button onclick="deleteEvent(${e.id})">Delete Event</button>
+</div>
+`;
+});
+
+}
+
+/* ANALYTICS */
+
+async function loadLoginStats(){
+
+const res=await fetch(API+"/admin/login-stats");
+const data=await res.json();
+
+const labels=data.map(d=>d.date);
+const values=data.map(d=>d.count);
+
+new Chart(document.getElementById("loginChart"),{
+type:"bar",
+data:{
+labels,
+datasets:[{
+label:"Logins",
+data:values
+}]
+}
+});
+
+}
+async function loadActivity(){
+
+ const res = await fetch(API+"/admin/activity");
+ const data = await res.json();
+
+ activity.innerHTML = `
+ Students: ${data.students} <br>
+ Mentors: ${data.mentors} <br>
+ Events: ${data.events} <br>
+ Jobs: ${data.jobs}
+ `;
+
+}
+async function deleteEvent(id){
+
+ await fetch(API+"/admin/delete-event/"+id,{
+  method:"DELETE"
+ });
+
+ alert("Event deleted");
+
+ loadEvents();
+
+}
+async function loadOnlineStudents(){
+
+ const res = await fetch(API+"/admin/online-users");
+ const data = await res.json();
+
+ const list=document.getElementById("onlineStudents");
+
+ list.innerHTML="";
+
+ if(data.length===0){
+  list.innerHTML="<li>No students online</li>";
+  return;
+ }
+
+ data.forEach(u=>{
+  list.innerHTML+=`<li>${u}</li>`;
+ });
+
+}
+async function addDonation(){
+
+ const form = new FormData();
+ form.append("name",dname.value);
+ form.append("phone",phone.value);
+ form.append("description",ddesc.value);
+ form.append("scanner",scanner.files[0]);
+
+ await fetch(API+"/admin/add-donation",{
+  method:"POST",
+  body:form
+ });
+
+ alert("Donation added");
+
+ loadDonations();
+}
+
+async function loadDonations(){
+
+ const res = await fetch(API+"/donations");
+ const data = await res.json();
+
+ donations.innerHTML="";
+
+ data.forEach(d=>{
+
+  donations.innerHTML+=`
+  <div class="card">
+  <h3>${d.name}</h3>
+  Phone: ${d.phone}<br>
+  ${d.description}<br>
+  <img src="http://localhost:5000/uploads/${d.scanner_image}" width="120"><br><br>
+  <button onclick="deleteDonation(${d.id})">Delete</button>
+  </div>
+  `;
+
+ });
+
+}
+
+async function deleteDonation(id){
+
+ await fetch(API+"/admin/delete-donation/"+id,{
+  method:"DELETE"
+ });
+
+ loadDonations();
+
+}
+
+loadDonations();
+loadProfile();
+loadEvents();
+loadLoginStats();
+loadActivity();
+loadOnlineStudents();
+loadEventRegistrations();
+</script>
+
+</body>
+</html>

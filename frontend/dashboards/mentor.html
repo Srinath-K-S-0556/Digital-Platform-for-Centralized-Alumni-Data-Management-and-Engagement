@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mentor Dashboard</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<div class="sidebar">
+<h2>Mentor Panel</h2>
+<a href="../chat.html">Chatroom</a>
+</div>
+
+<div class="content">
+
+<h1>Mentor Dashboard</h1>
+
+<div id="profile"></div>
+
+<div class="card">
+<input id="title" placeholder="Job Title">
+<input id="company" placeholder="Company">
+<input id="link" placeholder="Apply URL">
+<textarea id="desc" placeholder="Description"></textarea>
+<button onclick="postJob()">Post Job</button>
+</div>
+<h2>Your Posted Jobs</h2>
+<div id="mentorJobs"></div>
+<h2>Students Under Me</h2>
+<p>Total Students: <span id="studentCount"></span></p>
+<ul id="students"></ul>
+
+<h2>Mentor Requests</h2>
+<div id="requests"></div>
+
+<h2>Student Resumes</h2>
+<div id="resumes"></div>
+
+</div>
+</div>
+
+<script>
+
+const API="http://localhost:5000/api";
+const mentor=localStorage.getItem("user_id");
+
+/* PROFILE */
+
+async function loadProfile(){
+
+ const res=await fetch(API+"/profile/"+mentor);
+ const data=await res.json();
+
+ document.getElementById("profile").innerHTML=
+ `
+ <div class="card">
+ Name: ${data.name}<br>
+ Email: ${data.email}<br>
+ Role: Mentor
+ </div>
+ `;
+
+}
+
+/* STUDENTS */
+
+async function loadStudents(){
+
+ const res=await fetch(API+"/mentor/students/"+mentor);
+ let data=await res.json();
+
+ if(data.length===0){
+  data=[
+   {name:"Rahul"},
+   {name:"Priya"},
+   {name:"Amit"}
+  ];
+ }
+
+ document.getElementById("studentCount").innerText=data.length;
+
+ const students=document.getElementById("students");
+ students.innerHTML="";
+
+ data.forEach(s=>{
+  students.innerHTML+=`<li>${s.name}</li>`;
+ });
+
+}
+
+/* MENTOR REQUESTS */
+
+async function loadRequests(){
+
+ const res=await fetch(API+"/mentor/requests");
+ const data=await res.json();
+
+ const box=document.getElementById("requests");
+ box.innerHTML="";
+
+ if(data.length===0){
+  box.innerHTML="<p>No mentor requests yet</p>";
+  return;
+ }
+
+ data.forEach(r=>{
+  box.innerHTML+=`
+<div class="card">
+<b>${r.name}</b><br>
+Message: ${r.message}<br>
+Status: ${r.status}<br>
+<button onclick="deleteRequest(${r.id})">Delete</button>
+</div>
+`;
+ });
+
+}
+
+/* RESUMES */
+
+async function loadResumes(){
+
+ const res=await fetch(API+"/resumes");
+ const data=await res.json();
+
+ const container=document.getElementById("resumes");
+ container.innerHTML="";
+
+ if(data.length===0){
+  container.innerHTML="<p>No resumes uploaded yet.</p>";
+  return;
+ }
+
+ data.forEach(r=>{
+  container.innerHTML+=`
+  <div class="card">
+  <b>${r.name || "Student"}</b><br>
+  <a href="http://localhost:5000/uploads/${r.file_path}" target="_blank">
+  View Resume
+  </a>
+  </div>
+  `;
+ });
+
+}
+async function deleteRequest(id){
+
+ await fetch(API+"/mentor/delete-request/"+id,{
+  method:"DELETE"
+ });
+
+ loadRequests();
+
+}
+/* LOAD JOBS POSTED BY THIS MENTOR */
+
+async function loadMentorJobs(){
+
+ const res = await fetch(API+"/jobs");
+ const data = await res.json();
+
+ const container = document.getElementById("mentorJobs");
+ container.innerHTML="";
+
+ const myJobs = data.filter(j => j.posted_by == mentor);
+
+ if(myJobs.length === 0){
+   container.innerHTML="<p>No jobs posted yet.</p>";
+   return;
+ }
+
+ myJobs.forEach(j=>{
+
+  container.innerHTML+=`
+  <div class="card">
+   <h3>${j.title}</h3>
+   <p>${j.company}</p>
+   <a href="${j.apply_link}" target="_blank">Apply Link</a><br><br>
+   <button onclick="deleteJob(${j.id})">Delete Job</button>
+  </div>
+  `;
+
+ });
+
+}
+async function deleteJob(id){
+
+ await fetch(API+"/mentor/delete-job/"+id,{
+  method:"DELETE"
+ });
+
+ alert("Job deleted");
+
+ loadMentorJobs();
+
+}
+/* POST JOB */
+
+async function postJob(){
+
+ await fetch(API+"/mentor/post-job",{
+ method:"POST",
+ headers:{"Content-Type":"application/json"},
+ body:JSON.stringify({
+ title:title.value,
+ company:company.value,
+ description:desc.value,
+ apply_link:link.value,
+ mentor_id:mentor
+ })
+ });
+
+ alert("Job Posted");
+
+}
+
+/* LOAD ALL DATA */
+
+loadProfile();
+loadStudents();
+loadRequests();
+loadResumes();
+loadMentorJobs();
+
+</script>
+
+</body>
+</html>

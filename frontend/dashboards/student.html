@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Dashboard</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<div class="sidebar">
+<h2>Student Panel</h2>
+<button onclick="loadProfile()">Profile</button>
+<a href="../chat.html">Chatroom</a>
+</div>
+
+<div class="content">
+
+<h1>Student Dashboard</h1>
+
+<div id="profile"></div>
+
+<h2>Events</h2>
+<div id="events"></div>
+
+<h2>Jobs</h2>
+<div id="jobs"></div>
+
+<h2>Request Mentor</h2>
+<div class="card">
+<input id="mentorId" placeholder="Mentor ID">
+<textarea id="message"></textarea>
+<button onclick="requestMentor()">Send Request</button>
+</div>
+
+<h2>Upload Resume</h2>
+<div class="card">
+<input type="file" id="resume">
+<button onclick="uploadResume()">Upload Resume</button>
+</div>
+
+<h2>Donations</h2>
+<div id="donations"></div>
+
+</div>
+</div>
+
+<script>
+
+const API="http://localhost:5000/api";
+const student_id = localStorage.getItem("user_id");
+
+/* PROFILE */
+
+async function loadProfile(){
+
+const res=await fetch(API+"/profile/"+student_id);
+const data=await res.json();
+
+profile.innerHTML=`
+<div class="card">
+Name: ${data.name}<br>
+University ID: ${data.university_id}<br>
+Email: ${data.email}<br>
+Role: ${data.role}<br>
+Mentor ID: ${data.mentor_id || "Not Assigned"}
+</div>
+`;
+
+}
+
+/* EVENTS */
+
+async function loadEvents(){
+
+const res=await fetch(API+"/events");
+const data=await res.json();
+
+events.innerHTML="";
+
+data.forEach(e=>{
+events.innerHTML+=`
+<div class="card">
+<h3>${e.title}</h3>
+<p>${e.description}</p>
+<button onclick="registerEvent(${e.id})">Register</button>
+</div>
+`;
+});
+
+}
+
+async function registerEvent(id){
+
+await fetch(API+"/register-event",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+student_id,
+event_id:id
+})
+});
+
+alert("Registered");
+
+}
+
+/* JOBS */
+
+async function loadJobs(){
+
+const res=await fetch(API+"/jobs");
+const data=await res.json();
+
+jobs.innerHTML="";
+
+data.forEach(j=>{
+jobs.innerHTML+=`
+<div class="card">
+<h3>${j.title}</h3>
+<p>${j.company}</p>
+<a href="${j.apply_link}" target="_blank">Apply</a>
+</div>
+`;
+});
+
+}
+async function requestMentor(){
+
+ const mentor_id = mentorId.value;
+ const msg = message.value;
+
+ await fetch(API+"/mentor/request",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+   student_id:student_id,
+   mentor_id:mentor_id,
+   message:msg
+  })
+ });
+
+ alert("Request sent");
+
+}
+/* RESUME */
+
+async function uploadResume(){
+
+const file=document.getElementById("resume").files[0];
+
+const form=new FormData();
+form.append("resume",file);
+form.append("user_id",student_id);
+
+await fetch(API+"/upload-resume",{
+method:"POST",
+body:form
+});
+
+alert("Resume Uploaded");
+
+}
+async function loadDonations(){
+
+ const res = await fetch(API+"/donations");
+ const data = await res.json();
+
+ donations.innerHTML="";
+
+ if(data.length===0){
+  donations.innerHTML="<p>No donations available.</p>";
+  return;
+ }
+
+ data.forEach(d=>{
+
+  donations.innerHTML+=`
+  <div class="card">
+  <h3>${d.name}</h3>
+  Phone: ${d.phone}<br>
+  ${d.description}<br>
+  <img src="http://localhost:5000/uploads/${d.scanner_image}" width="120">
+  </div>
+  `;
+
+ });
+
+}
+
+loadDonations();
+
+loadProfile();
+loadEvents();
+loadJobs();
+
+</script>
+
+</body>
+</html>
