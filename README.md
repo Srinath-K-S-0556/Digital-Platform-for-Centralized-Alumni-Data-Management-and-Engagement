@@ -127,20 +127,21 @@ This project is deployed using:
 git clone https://github.com/Srinath-K-S-0556/Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement.git
 cd Digital-Platform-for-Centralized-Alumni-Data-Management-and-Engagement
 
+---
 
 ## 👨‍💻 Project Team
 
-**Developed by:**
+Developed by:
 
 - Srinath K S  
 - Dandu Dinesh  
 - Modi Ritheesh  
 
-**Guide / Supervisor:**
+Guide / Supervisor:
 
 - Tigulla Rajitha, Assistant Professor  
 
-**Institution:**
+Institution:
 
 - School of Information Science  
 - Presidency University, Bangalore  
